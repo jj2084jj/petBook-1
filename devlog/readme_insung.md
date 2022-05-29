@@ -1,10 +1,7 @@
 # petBook Devlog
 
-### Developer : name
+### Developer : 강인성
 
-- 22.05.28 개발 기록 공유 (example)
-
-> 작업 내용 기록해주시면 됩니다
-> 필요한 경우 커밋 링크 걸어주시고
-> 카톡방에는 이 리드미 링크를 걸어주세요
-> 카톡에는 자세한 내용은 공유 안해주셔도 됩니다 !
+- 22.05.29 개발
+  - 알고리즘 풀이 (https://www.acmicpc.net/problem/1943)
+  - DDD 와 MSA 운용을 위한 인터넷 강좌 수강
