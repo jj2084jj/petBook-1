@@ -1,5 +1,6 @@
 package io.petbook.pbboard.domain;
 
+import io.petbook.pbboard.common.exception.IllegalStatusException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -37,7 +38,7 @@ public class AbstractEntity {
 
     public void created() {
         if (this.crudStatus != CrudStatus.CREATED) {
-            // TODO: Exception 던지기. 상태는 수정 -> 추가, 삭제 -> 추가 이와 같이 될 수 없다.
+            throw new IllegalStatusException("상태 전달 오류 - MODIFIED, DELETED, RESTORED -> CREATED 상태로 전환이 불가능 합니다.");
         }
 
         this.crudStatus = CrudStatus.CREATED;
