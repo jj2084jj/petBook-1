@@ -1,7 +1,7 @@
 ![header](https://capsule-render.vercel.app/api?type=rounded&color=0:9fc131,100:ffec5c&height=300&section=header&text=%20petBook%20&animation=fadeIn&fontSize=80&fontColor=25383c&fontAlignY=40&desc=특별한%20동물을%20위한%20특별한%20전자책%20'펫북'&descAlignY=75&rotate=0)
 
 <h3 align="center">
-<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fsteven-yn%2FpetBook&count_bg=%23E8E8E8&title_bg=%23C4D3DA&icon=furrynetwork.svg&icon_color=%23000000&title=visit&edge_flat=false"/>
+<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fsteven-yn%2FpetBook%2F&count_bg=%23E8E8E8&title_bg=%23C4D3DA&icon=furrynetwork.svg&icon_color=%23000000&title=visit&edge_flat=false"/>
 </h3>
 
 ##🐰 펫북이란?
