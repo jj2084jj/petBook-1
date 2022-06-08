@@ -25,4 +25,15 @@ public class CategoryCommand {
 
         // [Kang] TODO : Data Validation Check
     }
+
+    @Getter
+    @Builder
+    public static class Modifier {
+        private final String token;
+        private final String title;
+        private final String userToken;
+        private final Boolean visible;
+
+        // [Kang] TODO : Data Validation Check
+    }
 }

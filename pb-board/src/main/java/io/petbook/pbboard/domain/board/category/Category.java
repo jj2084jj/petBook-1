@@ -2,6 +2,7 @@ package io.petbook.pbboard.domain.board.category;
 
 import com.google.common.collect.Lists;
 import io.petbook.pbboard.common.exception.InvalidParamException;
+import io.petbook.pbboard.common.exception.InvalidTokenException;
 import io.petbook.pbboard.common.util.TokenGenerator;
 import io.petbook.pbboard.domain.AbstractEntity;
 import io.petbook.pbboard.domain.board.article.Article;
@@ -93,5 +94,24 @@ public class Category extends AbstractEntity {
 
     public void disable() {
         this.visibleStatus = VisibleStatus.DISABLED;
+    }
+
+    public boolean isVisible() {
+        return this.visibleStatus == VisibleStatus.ENABLED;
+    }
+
+    public void modifyByCommand(CategoryCommand.Modifier command) {
+        if (!StringUtils.equals(this.token, command.getToken())) {
+            throw new InvalidTokenException("토큰이 일치하지 않아 수정 작업이 불가능 합니다.");
+        }
+
+        this.title = command.getTitle();
+        this.userToken = command.getUserToken();
+
+        if (command.getVisible()) {
+            this.enable();
+        } else {
+            this.disable();
+        }
     }
 }

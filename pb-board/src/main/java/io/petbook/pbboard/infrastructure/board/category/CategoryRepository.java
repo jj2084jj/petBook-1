@@ -11,6 +11,12 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository extends CrudRepository<Category, Long> {
     // [Kang] JPA 에서 메소드 네이밍이 길어지면, JPQL 를 사용하는 걸 권장한다.
-    @Query("select c from Category c where c.crudStatus <> \"DELETED\" and c.token = :token")
+    @Query("select c from Category c where c.crudStatus <> \'DELETED\'")
+    Iterable<Category> findAll();
+
+    @Query("select c from Category c where c.crudStatus <> \'DELETED\' and c.token = :token")
     Optional<Category> findByToken(@Param("token") String token);
+
+    @Query("select c from Category c where c.crudStatus = \'DELETED\' and c.token = :token")
+    Optional<Category> findByTokenIsDeleted(@Param("token") String token);
 }

@@ -37,10 +37,32 @@ public class AbstractEntity {
     }
 
     public void created() {
+        if (this.crudStatus == null) {
+            this.crudStatus = CrudStatus.CREATED;
+        }
+
         if (this.crudStatus != CrudStatus.CREATED) {
             throw new IllegalStatusException("상태 전달 오류 - MODIFIED, DELETED, RESTORED -> CREATED 상태로 전환이 불가능 합니다.");
         }
+    }
 
-        this.crudStatus = CrudStatus.CREATED;
+    public void modified() {
+        if (this.crudStatus == CrudStatus.DELETED) {
+            throw new IllegalStatusException("상태 전달 오류 - DELETED -> MODIFIED 상태로 전환이 불가능 합니다.");
+        }
+
+        this.crudStatus = CrudStatus.MODIFIED;
+    }
+
+    public void deleted() {
+        this.crudStatus = CrudStatus.DELETED;
+    }
+
+    public void restored() {
+        if (this.crudStatus != CrudStatus.DELETED) {
+            throw new IllegalStatusException("상태 전달 오류 - CREATED, MODIFIED, RESTORED -> RESTORED 상태로 전환이 불가능 합니다.");
+        }
+
+        this.crudStatus = CrudStatus.RESTORED;
     }
 }

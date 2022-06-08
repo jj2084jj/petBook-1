@@ -20,28 +20,28 @@ import java.util.Optional;
 @Repository
 public interface ArticleRepository extends CrudRepository<Article, Long> {
     // [Kang] JPA 에서 메소드 네이밍이 길어지면, JPQL 를 사용하는 걸 권장한다.
-    @Query("select a from Article a where a.crudStatus <> \"DELETED\" and a.token = :token")
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.token = :token")
     Optional<Article> findByToken(@Param("token") String token);
 
-    @Query("select count(a) from Article a where a.crudStatus <> \"DELETED\"")
+    @Query("select count(a) from Article a where a.crudStatus <> \'DELETED\'")
     Long countAll();
 
-    @Query("select a from Article a where a.crudStatus <> \"DELETED\" and (a.title like %:text% or a.context like %:text%) ")
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and (a.title like %:text% or a.context like %:text%) ")
     Page<Article> findAllTextContains(@Param("text") String text, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \"DELETED\" and a.title like %:text%")
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.title like %:text%")
     Page<Article> findTitleTextContains(@Param("text") String text, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \"DELETED\" and a.context like %:text%")
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.context like %:text%")
     Page<Article> findContextTextContains(@Param("text") String text, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \"DELETED\" and a.category.token = :categoryToken and (a.title like %:text% or a.context like %:text%) ")
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.category.token = :categoryToken and (a.title like %:text% or a.context like %:text%)")
     Page<Article> findAllTextContainsWithCategory(@Param("text") String text, @Param("categoryToken") String categoryToken, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \"DELETED\" and a.category.token = :categoryToken and a.title like %:text%")
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.category.token = :categoryToken and a.title like %:text%")
     Page<Article> findTitleTextContainsWithCategory(@Param("text") String text, @Param("categoryToken") String categoryToken, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \"DELETED\" and a.category.token = :categoryToken and a.context like %:text%")
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.category.token = :categoryToken and a.context like %:text%")
     Page<Article> findContextTextContainsWithCategory(@Param("text") String text, @Param("categoryToken") String categoryToken, Pageable pageable);
 
     // [Kang] 페이징네이션 객체 기반 쿼리 처리 문단
