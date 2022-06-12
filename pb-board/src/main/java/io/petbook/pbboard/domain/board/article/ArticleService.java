@@ -1,5 +1,9 @@
 package io.petbook.pbboard.domain.board.article;
 
+import java.util.Map;
+
 public interface ArticleService {
-    Iterable<ArticleInfo.Brief> loadBriefList(ArticleCommand.Paginate paginate);
+    Map<String, Object>  loadBriefList(ArticleCommand.Paginate paginate);
+    ArticleInfo.Detail loadDetailView(String token);
+    ArticleInfo.Brief createArticle(ArticleCommand.Main command);
 }

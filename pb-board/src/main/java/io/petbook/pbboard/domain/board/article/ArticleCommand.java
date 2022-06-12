@@ -15,23 +15,25 @@ public class ArticleCommand {
     public static class Main {
         private final String title;
         private final String context;
+        private final Boolean visible;
         private final String userToken;
-        private final Category category;
+        private final String categoryToken;
 
-        public Article toEntity(
-            String title,
-            String context,
-            boolean visible,
-            String userToken,
-            Category category
-        ) {
-            return Article.builder()
-                    .title(title)
-                    .context(context)
-                    .visible(visible)
-                    .userToken(userToken)
-                    .category(category)
-                    .build();
+        public Article toEntity(Category category) {
+            Article article = Article.builder()
+                                .title(title)
+                                .context(context)
+                                .userToken(userToken)
+                                .category(category)
+                                .build();
+
+            if (visible) {
+                article.enable();
+            } else {
+                article.disable();
+            }
+
+            return article;
         }
 
         // [Kang] TODO : Data Validation Check
@@ -40,13 +42,14 @@ public class ArticleCommand {
     @Getter
     @Builder
     public static class Paginate {
-        private final int pg = 1;
-        private final int sz = 10;
-        private final OrderBy ob;
-        private final SearchBy sb;
+        private int pg = 1;
+        private int sz = 10;
+        private OrderBy ob = OrderBy.CREATED_AT_DESC;
+        private SearchBy sb;
         private final String st;
         private final String ctgTk; // [Kang] 카테고리 토큰
 
+        @Getter
         @RequiredArgsConstructor
         public enum OrderBy {
             // [Kang] 코드 순서는 향후에 바뀔 수도 있다.
@@ -59,6 +62,7 @@ public class ArticleCommand {
             private final int code;
         }
 
+        @Getter
         @RequiredArgsConstructor
         public enum SearchBy {
             ALL_CONTAINS(0), // [Kang] 제목, 내용 모두 해당.
@@ -70,4 +74,6 @@ public class ArticleCommand {
             private final int code;
         }
     }
+
+    // [Kang] TODO: sb, ob 값으로, 검색 조건에 대한 enumeration 을 반환하는 기능을 하나 만들어야 할 거 같다.
 }

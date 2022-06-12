@@ -113,12 +113,15 @@ public class Article extends AbstractEntity {
         this.visibleStatus = VisibleStatus.DISABLED;
     }
 
+    public boolean isVisible() {
+        return this.visibleStatus == Article.VisibleStatus.ENABLED;
+    }
+
     public String contextBriefing() {
         if (this.context == null) {
             return "";
         } else {
-
-            return this.context.substring(0, 32);
+            return this.context.substring(0, 32) + "...";
         }
     }
 }

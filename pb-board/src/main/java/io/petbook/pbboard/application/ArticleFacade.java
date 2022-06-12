@@ -1,5 +1,7 @@
 package io.petbook.pbboard.application;
 
+import io.petbook.pbboard.domain.board.article.ArticleService;
+import io.petbook.pbboard.domain.board.category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ArticleFacade {
+    private final ArticleService articleService;
+    private final CategoryService categoryService;
+
     public List<Object> loadArticleList() {
         // [Kang] 메소드는 가명.
         /**

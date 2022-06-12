@@ -26,6 +26,12 @@ public interface ArticleRepository extends CrudRepository<Article, Long> {
     @Query("select count(a) from Article a where a.crudStatus <> \'DELETED\'")
     Long countAll();
 
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\'")
+    Page<Article> findAll(Pageable pageable);
+
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.category.token = :categoryToken")
+    Page<Article> findAllWithCategory(@Param("categoryToken") String categoryToken, Pageable pageable);
+
     @Query("select a from Article a where a.crudStatus <> \'DELETED\' and (a.title like %:text% or a.context like %:text%) ")
     Page<Article> findAllTextContains(@Param("text") String text, Pageable pageable);
 
@@ -59,33 +65,39 @@ public interface ArticleRepository extends CrudRepository<Article, Long> {
                 pageRequest.withSort(Sort.by("createdAt"));
                 break;
             case CREATED_AT_DESC:
-                pageRequest.withSort(Sort.by("createdAt").descending());
+                pageRequest.withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
                 break;
-
             // [Kang] 좋아요, 조회수, 정확도는 TODO.
         }
 
         boolean hasCtgTk = !StringUtils.isEmpty(paginate.getCtgTk());
 
         // [Kang] Search By 처리
-        switch(paginate.getSb()) {
-            case ALL_CONTAINS:
-                articles =
+        if (paginate.getSb() != null) {
+            switch (paginate.getSb()) {
+                case ALL_CONTAINS:
+                    articles =
+                            hasCtgTk ?
+                                    findAllTextContainsWithCategory(paginate.getSt(), paginate.getCtgTk(), pageRequest) :
+                                    findAllTextContains(paginate.getSt(), pageRequest);
+                case TITLE_CONTAINS:
+                    articles =
+                            hasCtgTk ?
+                                    findTitleTextContainsWithCategory(paginate.getSt(), paginate.getCtgTk(), pageRequest) :
+                                    findTitleTextContains(paginate.getSt(), pageRequest);
+                    break;
+                case CONTEXT_CONTAINS:
+                    articles =
+                            hasCtgTk ?
+                                    findContextTextContainsWithCategory(paginate.getSt(), paginate.getCtgTk(), pageRequest) :
+                                    findContextTextContains(paginate.getSt(), pageRequest);
+                    break;
+            }
+        } else {
+            articles =
                     hasCtgTk ?
-                        findAllTextContainsWithCategory(paginate.getSt(), paginate.getCtgTk(), pageRequest) :
-                        findAllTextContains(paginate.getSt(), pageRequest);
-            case TITLE_CONTAINS:
-                articles =
-                    hasCtgTk ?
-                        findTitleTextContainsWithCategory(paginate.getSt(), paginate.getCtgTk(), pageRequest) :
-                        findTitleTextContains(paginate.getSt(), pageRequest);
-                break;
-            case CONTEXT_CONTAINS:
-                articles =
-                    hasCtgTk ?
-                        findContextTextContainsWithCategory(paginate.getSt(), paginate.getCtgTk(), pageRequest) :
-                        findContextTextContains(paginate.getSt(), pageRequest);
-                break;
+                        findAll(pageRequest) :
+                        findAllWithCategory(paginate.getCtgTk(), pageRequest);
         }
 
         // [Kang] 결과물 반환
