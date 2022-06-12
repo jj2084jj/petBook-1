@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-// TODO: Command 객체 -> Request 객체 재구성
+// TODO: Command 객체 -> Request 객체 재구성 (다음 주 부터 진행 예정)
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +25,11 @@ public class CategoryApiController {
         return CommonResponse.success(categoryService.getCategoryInfo(token));
     }
 
+    @GetMapping("/deleted")
+    public CommonResponse getCategoriesIsDeleted() {
+        return CommonResponse.success(categoryService.getCategoryInfoIsDeleted());
+    }
+
     @PostMapping
     public CommonResponse createCategory(@RequestBody CategoryCommand.Main request) {
         return CommonResponse.success(categoryService.createCategoryInfo(request));
@@ -33,6 +38,21 @@ public class CategoryApiController {
     @PutMapping
     public CommonResponse modifyCategory(@RequestBody CategoryCommand.Modifier request) {
         return CommonResponse.success(categoryService.modifyCategoryInfo(request));
+    }
+
+    @PutMapping("restore/{token}")
+    public CommonResponse restoreCategory(@PathVariable String token) {
+        return CommonResponse.success(categoryService.restoreCategoryInfo(token));
+    }
+
+    @PutMapping("enable/{token}")
+    public CommonResponse enableCategory(@PathVariable String token) {
+        return CommonResponse.success(categoryService.enableCategoryInfo(token));
+    }
+
+    @PutMapping("disable/{token}")
+    public CommonResponse disableCategory(@PathVariable String token) {
+        return CommonResponse.success(categoryService.disableCategoryInfo(token));
     }
 
     @DeleteMapping("{token}")

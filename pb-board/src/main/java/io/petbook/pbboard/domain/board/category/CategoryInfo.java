@@ -15,7 +15,7 @@ public class CategoryInfo {
             return Main.builder()
                     .token(category.getToken())
                     .visible(category.isVisible())
-                    .title(category.getTitle())
+                    .title(category.isVisible() ? category.getTitle() : "[[제목 비공개]]")
                     .build();
         }
     }

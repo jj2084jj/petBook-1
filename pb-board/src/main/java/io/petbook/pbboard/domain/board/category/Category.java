@@ -101,12 +101,14 @@ public class Category extends AbstractEntity {
     }
 
     public void modifyByCommand(CategoryCommand.Modifier command) {
+        // [Kang] TODO: Modifier 에서 접속 회원의 토큰을 가져와 저장된 회원 토큰과 연관되는지 체크해야 한다.
+        // [Kang] 회원 접속 정보는 토큰의 일치 여부로 간단하게 하지만, 암호화 데이터인 경우에는 SHA, MD 등에 따른 알고리즘으로 체크하는 경우도 있어야 할 것이다.
+
         if (!StringUtils.equals(this.token, command.getToken())) {
             throw new InvalidTokenException("토큰이 일치하지 않아 수정 작업이 불가능 합니다.");
         }
 
         this.title = command.getTitle();
-        this.userToken = command.getUserToken();
 
         if (command.getVisible()) {
             this.enable();

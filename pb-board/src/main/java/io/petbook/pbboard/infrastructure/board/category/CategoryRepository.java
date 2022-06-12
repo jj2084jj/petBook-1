@@ -14,6 +14,9 @@ public interface CategoryRepository extends CrudRepository<Category, Long> {
     @Query("select c from Category c where c.crudStatus <> \'DELETED\'")
     Iterable<Category> findAll();
 
+    @Query("select c from Category c where c.crudStatus = \'DELETED\'")
+    Iterable<Category> findAllIsDeleted();
+
     @Query("select c from Category c where c.crudStatus <> \'DELETED\' and c.token = :token")
     Optional<Category> findByToken(@Param("token") String token);
 

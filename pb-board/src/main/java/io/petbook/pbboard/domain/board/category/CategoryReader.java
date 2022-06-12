@@ -7,6 +7,7 @@ import java.util.List;
  */
 public interface CategoryReader {
     List<Category> getList();
+    List<Category> getListIsDeleted();
     Category getEntity(String token);
     Category getDeleteEntity(String token);
 }

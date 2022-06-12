@@ -25,6 +25,13 @@ public class CategoryReaderImpl implements CategoryReader {
     }
 
     @Override
+    public List<Category> getListIsDeleted() {
+        List<Category> categories = new ArrayList<>();
+        categoryRepository.findAllIsDeleted().forEach(categories::add);
+        return categories;
+    }
+
+    @Override
     public Category getEntity(String token) {
         return categoryRepository
                 .findByToken(token)
