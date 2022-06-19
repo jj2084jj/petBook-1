@@ -8,6 +8,7 @@ import com.petbook.config.ConfigUtils;
 import com.petbook.vo.GoogleLoginRequest;
 import com.petbook.vo.GoogleLoginResponse;
 import com.petbook.vo.GoogleLoginVO;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 @Controller
-@RequestMapping(value = "/google")
+@Log4j2
 public class GoogleController {
     private final ConfigUtils configUtils;
 
@@ -28,7 +29,7 @@ public class GoogleController {
         this.configUtils = configUtils;
     }
 
-    @GetMapping(value = "/login")
+    @GetMapping(value = "/google/login")
     public ResponseEntity<Object> moveGoogleInitUrl() {
         String authUrl = configUtils.googleInitUrl();
         URI redirectUri = null;
@@ -47,6 +48,7 @@ public class GoogleController {
     public ResponseEntity<GoogleLoginVO> redirectGoogleLogin(
             @RequestParam(value = "code") String authCode
     ) {
+        log.info("code : "+ authCode);
         //HTTP 통신을 위해 RestTemplate 활용
         RestTemplate restTemplate = new RestTemplate();
         GoogleLoginRequest requestParams = GoogleLoginRequest.builder()

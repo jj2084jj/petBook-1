@@ -55,4 +55,28 @@ public class ConfigUtils {
     }
 
 
+
+
+    @Value("${kakao.redirect.url}")
+    private String kakaoRedirectUrl;
+
+    @Value("${kakao.restapi.key}")
+    private String kakaoRestKey;
+
+    @Value("${kakao.login.url}")
+    private String kakaoLoginUrl;
+
+    public String kakaoInitUrl(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("client_id", kakaoRestKey);
+        params.put("redirect_uri", kakaoRedirectUrl);
+        params.put("response_type", "code");
+        String paramStr = params.entrySet().stream()
+                .map(param -> param.getKey() + "=" + param.getValue())
+                .collect(Collectors.joining("&"));
+
+        return kakaoLoginUrl
+                + "?"
+                + paramStr;
+    }
 }
