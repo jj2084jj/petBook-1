@@ -23,11 +23,11 @@ public interface ArticleRepository extends CrudRepository<Article, Long> {
     @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.token = :token")
     Optional<Article> findByToken(@Param("token") String token);
 
-    @Query("select count(a) from Article a where a.crudStatus <> \'DELETED\'")
-    Long countAll();
-
     @Query("select a from Article a where a.crudStatus <> \'DELETED\'")
     Page<Article> findAll(Pageable pageable);
+
+    @Query("select a from Article a where a.crudStatus = \'DELETED\'")
+    Iterable<Article> findAllIsDeleted();
 
     @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.category.token = :categoryToken")
     Page<Article> findAllWithCategory(@Param("categoryToken") String categoryToken, Pageable pageable);
@@ -60,21 +60,22 @@ public interface ArticleRepository extends CrudRepository<Article, Long> {
         PageRequest pageRequest = PageRequest.of(paginate.getPg() - 1, paginate.getSz());
 
         // [Kang] Order By 처리
-        switch (paginate.getOb()) {
+        switch (ArticleCommand.Paginate.loadObByIntCode(paginate.getOb())) {
             case CREATED_AT_ASC:
                 pageRequest.withSort(Sort.by("createdAt"));
                 break;
             case CREATED_AT_DESC:
                 pageRequest.withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
                 break;
+
             // [Kang] 좋아요, 조회수, 정확도는 TODO.
         }
 
         boolean hasCtgTk = !StringUtils.isEmpty(paginate.getCtgTk());
 
         // [Kang] Search By 처리
-        if (paginate.getSb() != null) {
-            switch (paginate.getSb()) {
+        if (paginate.getSb() != 0) {
+            switch (ArticleCommand.Paginate.loadSbByIntCode(paginate.getSb())) {
                 case ALL_CONTAINS:
                     articles =
                             hasCtgTk ?

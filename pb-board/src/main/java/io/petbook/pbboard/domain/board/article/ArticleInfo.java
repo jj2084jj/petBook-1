@@ -1,9 +1,11 @@
 package io.petbook.pbboard.domain.board.article;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * [Kang] Article Reading Model
@@ -17,8 +19,20 @@ public class ArticleInfo {
         private final String title;
         private String context;
 
+        private List<String> keywords; // TODO: Keyword Info 설계 완료 시, 키워드 및 토큰값 객체 적용 필요
+
         // [Kang] TODO: UserToken 으로 사용자 이름, 별명 정보 불러와 주입 시키기
-        private final String author;
+        private final String authorToken;
+        private String author;
+
+        private Long viewCount; // [Kang] 아직 조회수 설계에 대해 고려를 안 했음.
+        private Long likeCount; // [Kang] 아직 좋아요 설계에 대해 고려를 안 했음.
+
+        public void modifyByAccessor(ArticleCommand.InfoAccessor accessor) {
+            this.author = accessor.getAuthor();
+            this.viewCount = accessor.getViewCount();
+            this.likeCount = accessor.getLikeCount();
+        }
     }
 
     @Getter
@@ -27,15 +41,12 @@ public class ArticleInfo {
         // [Kang] 리스트 등에서 불러오기 위한 단순 데이터
         private final String createdAt;
 
-        private final Long viewCount; // [Kang] 아직 조회수 설계에 대해 고려를 안 했음.
-        private final Long likeCount; // [Kang] 아직 좋아요 설계에 대해 고려를 안 했음.
-
         public static Brief toInfo(Article article) {
             return Brief.builder()
                     .token(article.getToken())
                     .title(article.isVisible() ? article.getTitle() : "[[제목 비공개]]")
                     .context(article.isVisible() ? article.contextBriefing() : "[[내용 비공개]]")
-                    .author(article.getUserToken())
+                    .authorToken(article.getUserToken())
                     .createdAt(article.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                     .viewCount(0L)
                     .likeCount(0L)
@@ -51,9 +62,6 @@ public class ArticleInfo {
         private final String createdAt;
         private final String updatedAt;
 
-        private final Long viewCount; // [Kang] 아직 조회수 설계에 대해 고려를 안 했음.
-        private final Long likeCount; // [Kang] 아직 좋아요 설계에 대해 고려를 안 했음.
-
         // [Kang] TODO: 댓글 수, 댓글 목록 등등 반영 필요
 
         public static Detail toInfo(Article article) {
@@ -61,7 +69,7 @@ public class ArticleInfo {
                     .token(article.getToken())
                     .title(article.isVisible() ? article.getTitle() : "[[제목 비공개]]")
                     .context(article.isVisible() ? article.getContext() : "[[내용 비공개]]")
-                    .author(article.getUserToken())
+                    .authorToken(article.getUserToken())
                     .categoryTitle(article.getCategory().getTitle())
                     .createdAt(article.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                     .updatedAt(article.getUpdatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
@@ -69,5 +77,19 @@ public class ArticleInfo {
                     .likeCount(0L)
                     .build();
         }
+    }
+
+    @Getter
+    @Builder
+    public static class Paginate {
+        private final List<Brief> data;
+        private final Long total;
+        private final Long pages;
+    }
+
+    @Getter
+    @Builder
+    public static class DeleteProcStatus {
+        private final boolean completed;
     }
 }

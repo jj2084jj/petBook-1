@@ -54,4 +54,4 @@ Content-Type: application/json
 GET http://localhost:8080/api/v1/articles?pg=1&sz=2&ctgTk={{categoryToken}}
 
 ### 페이징네이션 검색 : PG=1 & SZ=2
-GET http://localhost:8080/api/v1/articles?pg=1&sz=2&st=mTE&sb=ALL_CONTAINS
+GET http://localhost:8080/api/v1/articles?pg=1&sz=2&st=mTE&sb=1

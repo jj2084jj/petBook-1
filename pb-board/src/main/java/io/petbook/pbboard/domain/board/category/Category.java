@@ -52,6 +52,10 @@ public class Category extends AbstractEntity {
         private final String description;
     }
 
+    /**
+     * [Kang] CascadeType 에 대해 고찰해볼 필요가 있다. 추후 자세히 알아보자.
+     * https://data-make.tistory.com/668
+     */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.PERSIST)
     private List<Article> posts = Lists.newArrayList();
 

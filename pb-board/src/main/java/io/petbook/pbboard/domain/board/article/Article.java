@@ -1,9 +1,12 @@
 package io.petbook.pbboard.domain.board.article;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.petbook.pbboard.common.exception.InvalidParamException;
+import io.petbook.pbboard.common.exception.InvalidTokenException;
 import io.petbook.pbboard.common.util.TokenGenerator;
 import io.petbook.pbboard.domain.AbstractEntity;
 import io.petbook.pbboard.domain.board.category.Category;
+import io.petbook.pbboard.domain.board.keyword.Keyword;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
+import java.util.Set;
 
 
 /**
@@ -57,6 +61,11 @@ public class Article extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    // [Kang] Keyword 데이터 추가
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "articles", cascade = CascadeType.PERSIST)
+    private Set<Keyword> keywords;
 
     // [Kang] TODO: 권한 별 공개 여부, 게시글 조회수 등등
 
@@ -115,6 +124,21 @@ public class Article extends AbstractEntity {
 
     public boolean isVisible() {
         return this.visibleStatus == Article.VisibleStatus.ENABLED;
+    }
+
+    public void modifyByCommand(ArticleCommand.Modifier command) {
+        if (!StringUtils.equals(this.token, command.getToken())) {
+            throw new InvalidTokenException("토큰이 일치하지 않아 수정 작업이 불가능 합니다.");
+        }
+
+        this.title = command.getTitle();
+        this.context = command.getContext();
+
+        if (command.getVisible()) {
+            this.enable();
+        } else {
+            this.disable();
+        }
     }
 
     public String contextBriefing() {

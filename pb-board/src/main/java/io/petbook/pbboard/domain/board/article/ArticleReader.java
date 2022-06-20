@@ -1,5 +1,6 @@
 package io.petbook.pbboard.domain.board.article;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -8,4 +9,5 @@ import java.util.Map;
 public interface ArticleReader {
     Article getEntity(String token);
     Map<String, Object> getList(ArticleCommand.Paginate paginate);
+    List<Article> getListIsDeleted();
 }
