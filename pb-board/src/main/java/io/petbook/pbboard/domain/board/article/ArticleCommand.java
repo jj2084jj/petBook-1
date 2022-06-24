@@ -45,12 +45,25 @@ public class ArticleCommand {
     @Getter
     @Builder
     public static class Paginate {
-        private int pg = 1;
-        private int sz = 10;
-        private int ob = OrderBy.CREATED_AT_DESC.code;
-        private int sb = 0;
+        @Builder.Default
+        private Integer pg = 1;
+
+        @Builder.Default
+        private Integer sz = 10;
+
+        private Integer ob;
+        private Integer sb;
+
+        @Builder.Default
+        private Boolean secret = false;
+
         private final String st;
         private final String ctgTk; // [Kang] 카테고리 토큰
+
+        // [Kang] 비밀글 검색 여부는 secret 이 true 인 경우에만 실행한다.
+        public boolean checkVisible() {
+            return (this.secret == null || this.secret == false);
+        }
 
         @Getter
         @RequiredArgsConstructor

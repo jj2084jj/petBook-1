@@ -60,8 +60,8 @@ public class ArticleApiController {
         return CommonResponse.success(articleService.disableArticleInfo(token));
     }
 
-    @DeleteMapping
-    public CommonResponse deleteArticle(@RequestBody String token) {
+    @DeleteMapping("{token}")
+    public CommonResponse deleteArticle(@PathVariable String token) {
         return CommonResponse.success(articleService.deleteCategoryInfo(token));
     }
 }

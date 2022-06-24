@@ -8,6 +8,7 @@ import java.util.Map;
  */
 public interface ArticleReader {
     Article getEntity(String token);
+    Article getEntityIsDeleted(String token);
     Map<String, Object> getList(ArticleCommand.Paginate paginate);
     List<Article> getListIsDeleted();
 }

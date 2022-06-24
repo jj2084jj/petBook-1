@@ -27,6 +27,13 @@ public class ArticleReaderImpl implements ArticleReader {
     }
 
     @Override
+    public Article getEntityIsDeleted(String token) {
+        return articleRepository
+                .findByTokenIsDeleted(token)
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Override
     public Map<String, Object> getList(ArticleCommand.Paginate paginate) {
         return articleRepository.findByPaginate(paginate);
     }

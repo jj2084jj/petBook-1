@@ -78,7 +78,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @Transactional
     public ArticleInfo.Brief restoreArticleInfo(String token) {
-        Article article = articleReader.getEntity(token);
+        Article article = articleReader.getEntityIsDeleted(token);
         article.restored();
         return ArticleInfo.Brief.toInfo(article);
     }

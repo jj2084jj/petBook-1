@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +20,9 @@ public class ArticleInfo {
         private final String title;
         private String context;
 
-        private List<String> keywords; // TODO: Keyword Info 설계 완료 시, 키워드 및 토큰값 객체 적용 필요
+        // [Kang] @Builder 로 기본값 적용이 안 되면, @Builder.Default 처리를 해야 한다.
+        @Builder.Default
+        private List<String> keywords = new ArrayList<>(); // TODO: Keyword Info 설계 완료 시, 키워드 및 토큰값 객체 적용 필요
 
         // [Kang] TODO: UserToken 으로 사용자 이름, 별명 정보 불러와 주입 시키기
         private final String authorToken;
@@ -85,6 +88,7 @@ public class ArticleInfo {
         private final List<Brief> data;
         private final Long total;
         private final Long pages;
+        private final Long current;
     }
 
     @Getter

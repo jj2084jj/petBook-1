@@ -23,32 +23,35 @@ public interface ArticleRepository extends CrudRepository<Article, Long> {
     @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.token = :token")
     Optional<Article> findByToken(@Param("token") String token);
 
-    @Query("select a from Article a where a.crudStatus <> \'DELETED\'")
-    Page<Article> findAll(Pageable pageable);
+    @Query("select a from Article a where a.crudStatus = \'DELETED\' and a.token = :token")
+    Optional<Article> findByTokenIsDeleted(@Param("token") String token);
 
     @Query("select a from Article a where a.crudStatus = \'DELETED\'")
     Iterable<Article> findAllIsDeleted();
 
-    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.category.token = :categoryToken")
-    Page<Article> findAllWithCategory(@Param("categoryToken") String categoryToken, Pageable pageable);
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.visibleStatus = :visibleStatus")
+    Page<Article> findAll(@Param("visibleStatus") Article.VisibleStatus visibleStatus, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and (a.title like %:text% or a.context like %:text%) ")
-    Page<Article> findAllTextContains(@Param("text") String text, Pageable pageable);
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.visibleStatus = :visibleStatus and a.category.token = :categoryToken")
+    Page<Article> findAllWithCategory(@Param("visibleStatus") Article.VisibleStatus visibleStatus, @Param("categoryToken") String categoryToken, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.title like %:text%")
-    Page<Article> findTitleTextContains(@Param("text") String text, Pageable pageable);
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.visibleStatus = :visibleStatus and (a.title like %:text% or a.context like %:text%) ")
+    Page<Article> findAllTextContains(@Param("text") String text, @Param("visibleStatus") Article.VisibleStatus visibleStatus, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.context like %:text%")
-    Page<Article> findContextTextContains(@Param("text") String text, Pageable pageable);
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.visibleStatus = :visibleStatus and a.title like %:text%")
+    Page<Article> findTitleTextContains(@Param("text") String text, @Param("visibleStatus") Article.VisibleStatus visibleStatus, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.category.token = :categoryToken and (a.title like %:text% or a.context like %:text%)")
-    Page<Article> findAllTextContainsWithCategory(@Param("text") String text, @Param("categoryToken") String categoryToken, Pageable pageable);
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.visibleStatus = :visibleStatus and a.context like %:text%")
+    Page<Article> findContextTextContains(@Param("text") String text, @Param("visibleStatus") Article.VisibleStatus visibleStatus, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.category.token = :categoryToken and a.title like %:text%")
-    Page<Article> findTitleTextContainsWithCategory(@Param("text") String text, @Param("categoryToken") String categoryToken, Pageable pageable);
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.visibleStatus = :visibleStatus and a.category.token = :categoryToken and (a.title like %:text% or a.context like %:text%)")
+    Page<Article> findAllTextContainsWithCategory(@Param("text") String text, @Param("visibleStatus") Article.VisibleStatus visibleStatus, @Param("categoryToken") String categoryToken, Pageable pageable);
 
-    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.category.token = :categoryToken and a.context like %:text%")
-    Page<Article> findContextTextContainsWithCategory(@Param("text") String text, @Param("categoryToken") String categoryToken, Pageable pageable);
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.visibleStatus = :visibleStatus and a.category.token = :categoryToken and a.title like %:text%")
+    Page<Article> findTitleTextContainsWithCategory(@Param("text") String text, @Param("visibleStatus") Article.VisibleStatus visibleStatus, @Param("categoryToken") String categoryToken, Pageable pageable);
+
+    @Query("select a from Article a where a.crudStatus <> \'DELETED\' and a.visibleStatus = :visibleStatus and a.category.token = :categoryToken and a.context like %:text%")
+    Page<Article> findContextTextContainsWithCategory(@Param("text") String text, @Param("visibleStatus") Article.VisibleStatus visibleStatus, @Param("categoryToken") String categoryToken, Pageable pageable);
 
     // [Kang] 페이징네이션 객체 기반 쿼리 처리 문단
     default Map<String, Object> findByPaginate(ArticleCommand.Paginate paginate) {
@@ -58,54 +61,62 @@ public interface ArticleRepository extends CrudRepository<Article, Long> {
 
         Page<Article> articles = null;
         PageRequest pageRequest = PageRequest.of(paginate.getPg() - 1, paginate.getSz());
+        Article.VisibleStatus visibleStatus = paginate.checkVisible() ? Article.VisibleStatus.ENABLED : Article.VisibleStatus.DISABLED;
 
-        // [Kang] Order By 처리
-        switch (ArticleCommand.Paginate.loadObByIntCode(paginate.getOb())) {
-            case CREATED_AT_ASC:
-                pageRequest.withSort(Sort.by("createdAt"));
-                break;
-            case CREATED_AT_DESC:
-                pageRequest.withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
-                break;
+        // [Kang] Wrapper 클래스에 쿼리 스트링 ob 값을 설정 안 하면 값이 null 로 뜨는 거 같다. (아무리 @Builder.Default 를 하더라도...)
+        if (paginate.getOb() != null) {
+            // [Kang] Order By 처리
+            switch (ArticleCommand.Paginate.loadObByIntCode(paginate.getOb())) {
+                case CREATED_AT_ASC:
+                    pageRequest = pageRequest.withSort(Sort.by("createdAt"));
+                    break;
+                case CREATED_AT_DESC:
+                    pageRequest = pageRequest.withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
+                    break;
 
-            // [Kang] 좋아요, 조회수, 정확도는 TODO.
+                // [Kang] 좋아요, 조회수, 정확도는 TODO.
+            }
+        } else {
+            // [Kang] 아무런 값이 없는 경우에는 생성 시간 DESC 로 설정한다.
+            pageRequest = pageRequest.withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
         }
 
         boolean hasCtgTk = !StringUtils.isEmpty(paginate.getCtgTk());
 
         // [Kang] Search By 처리
-        if (paginate.getSb() != 0) {
+        if (paginate.getSb() != null) {
             switch (ArticleCommand.Paginate.loadSbByIntCode(paginate.getSb())) {
                 case ALL_CONTAINS:
                     articles =
                             hasCtgTk ?
-                                    findAllTextContainsWithCategory(paginate.getSt(), paginate.getCtgTk(), pageRequest) :
-                                    findAllTextContains(paginate.getSt(), pageRequest);
+                                    findAllTextContainsWithCategory(paginate.getSt(), visibleStatus, paginate.getCtgTk(), pageRequest) :
+                                    findAllTextContains(paginate.getSt(), visibleStatus, pageRequest);
                 case TITLE_CONTAINS:
                     articles =
                             hasCtgTk ?
-                                    findTitleTextContainsWithCategory(paginate.getSt(), paginate.getCtgTk(), pageRequest) :
-                                    findTitleTextContains(paginate.getSt(), pageRequest);
+                                    findTitleTextContainsWithCategory(paginate.getSt(), visibleStatus, paginate.getCtgTk(), pageRequest) :
+                                    findTitleTextContains(paginate.getSt(), visibleStatus, pageRequest);
                     break;
                 case CONTEXT_CONTAINS:
                     articles =
                             hasCtgTk ?
-                                    findContextTextContainsWithCategory(paginate.getSt(), paginate.getCtgTk(), pageRequest) :
-                                    findContextTextContains(paginate.getSt(), pageRequest);
+                                    findContextTextContainsWithCategory(paginate.getSt(), visibleStatus, paginate.getCtgTk(), pageRequest) :
+                                    findContextTextContains(paginate.getSt(), visibleStatus, pageRequest);
                     break;
             }
         } else {
             articles =
                     hasCtgTk ?
-                        findAll(pageRequest) :
-                        findAllWithCategory(paginate.getCtgTk(), pageRequest);
+                            findAll(visibleStatus, pageRequest) :
+                            findAllWithCategory(visibleStatus, paginate.getCtgTk(), pageRequest);
         }
 
         // [Kang] 결과물 반환
         Map<String, Object> result = Maps.newHashMap();
         result.put("data", articles.getContent());
         result.put("total", articles.getTotalElements());
-        result.put("pages", articles.getTotalPages());
+        result.put("current", (long) paginate.getPg());
+        result.put("pages", (long) articles.getTotalPages());
 
         return result;
     }

@@ -145,7 +145,7 @@ public class Article extends AbstractEntity {
         if (this.context == null) {
             return "";
         } else {
-            return this.context.substring(0, 32) + "...";
+            return this.context.substring(0, Math.min(this.context.length(), 32)) + "...";
         }
     }
 }

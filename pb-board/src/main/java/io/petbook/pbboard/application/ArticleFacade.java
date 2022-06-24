@@ -62,6 +62,7 @@ public class ArticleFacade {
                 .data(articles)
                 .total((Long) resultMap.get("total"))
                 .pages((Long) resultMap.get("pages"))
+                .current((Long) resultMap.get("current"))
                 .build();
     }
 
